@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>万能营销 Pro</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700;900&family=ZCOOL+XiaoWei&display=swap');
+
+  :root {
+    --gold: #C9A84C;
+    --gold-light: #E8C97A;
+    --gold-dark: #8A6820;
+    --ink: #1A1410;
+    --cream: #FAF6EE;
+    --red: #C0392B;
+    --page-h: 100dvh;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    width: 100%; height: 100%;
+    overflow: hidden;
+    background: var(--ink);
+    font-family: 'Noto Serif SC', serif;
+    color: var(--cream);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── CONTAINER ── */
+  #slider {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    transition: transform 0.8s cubic-bezier(0.77,0,0.175,1);
+    will-change: transform;
+  }
+
+  /* ── SHARED SECTION ── */
+  section {
+    width: 100%;
+    min-height: var(--page-h);
+    flex-shrink: 0;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 24px;
+  }
+
+  /* ── DOTS NAV ── */
+  #dots {
+    position: fixed;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: rgba(201,168,76,0.3);
+    border: 1.5px solid var(--gold);
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .dot.active { background: var(--gold); transform: scale(1.4); }
+
+  /* ── PAGE 1: HERO ── */
+  #p1 { background: var(--ink); }
+
+  .hero-bg {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 70% 60% at 50% 40%, rgba(201,168,76,0.12) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 40% at 80% 80%, rgba(192,57,43,0.08) 0%, transparent 60%);
+  }
+
+  .hero-lines {
+    position: absolute; inset: 0;
+    background-image:
+      repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(201,168,76,0.06) 39px, rgba(201,168,76,0.06) 40px),
+      repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(201,168,76,0.06) 39px, rgba(201,168,76,0.06) 40px);
+  }
+
+  .hero-border {
+    position: absolute;
+    inset: 16px;
+    border: 1px solid rgba(201,168,76,0.25);
+    pointer-events: none;
+  }
+  .hero-border::before {
+    content: '';
+    position: absolute;
+    inset: 6px;
+    border: 1px solid rgba(201,168,76,0.12);
+  }
+
+  /* corner ornaments */
+  .corner {
+    position: absolute;
+    width: 32px; height: 32px;
+    border-color: var(--gold);
+    border-style: solid;
+    opacity: 0.7;
+  }
+  .corner.tl { top: 16px; left: 16px; border-width: 2px 0 0 2px; }
+  .corner.tr { top: 16px; right: 16px; border-width: 2px 2px 0 0; }
+  .corner.bl { bottom: 16px; left: 16px; border-width: 0 0 2px 2px; }
+  .corner.br { bottom: 16px; right: 16px; border-width: 0 2px 2px 0; }
+
+  .badge {
+    display: inline-block;
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    font-size: 11px;
+    letter-spacing: 4px;
+    padding: 5px 16px;
+    margin-bottom: 24px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.2s forwards;
+  }
+
+  .hero-title {
+    font-family: 'ZCOOL XiaoWei', serif;
+    font-size: clamp(48px, 14vw, 88px);
+    font-weight: 400;
+    line-height: 1.1;
+    text-align: center;
+    background: linear-gradient(160deg, var(--gold-light) 0%, var(--gold) 50%, var(--gold-dark) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.5s forwards;
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero-sub {
+    font-size: 13px;
+    letter-spacing: 6px;
+    color: rgba(250,246,238,0.5);
+    margin-top: 16px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.8s forwards;
+  }
+
+  .hero-divider {
+    width: 60px; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    margin: 28px auto;
+    opacity: 0;
+    animation: fadeUp 0.8s 1s forwards;
+  }
+
+  .hero-desc {
+    font-size: 14px;
+    line-height: 2;
+    letter-spacing: 1px;
+    color: rgba(250,246,238,0.65);
+    text-align: center;
+    max-width: 280px;
+    opacity: 0;
+    animation: fadeUp 0.8s 1.1s forwards;
+  }
+
+  .scroll-hint {
+    position: absolute;
+    bottom: 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    opacity: 0;
+    animation: fadeUp 0.8s 1.5s forwards;
+  }
+  .scroll-hint span {
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: rgba(201,168,76,0.5);
+  }
+  .arrow-down {
+    width: 1px; height: 40px;
+    background: linear-gradient(to bottom, var(--gold), transparent);
+    animation: arrowPulse 1.5s infinite;
+  }
+
+  /* ── PAGE 2: FEATURES ── */
+  #p2 {
+    background: linear-gradient(160deg, #1e1810 0%, #0f0c08 100%);
+  }
+
+  .section-label {
+    font-size: 10px;
+    letter-spacing: 5px;
+    color: var(--gold);
+    opacity: 0.7;
+    margin-bottom: 12px;
+    text-align: center;
+  }
+  .section-title {
+    font-family: 'ZCOOL XiaoWei', serif;
+    font-size: clamp(28px, 8vw, 42px);
+    text-align: center;
+    background: linear-gradient(160deg, var(--gold-light), var(--gold-dark));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 40px;
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    width: 100%;
+    max-width: 400px;
+  }
+
+  .feat-card {
+    background: rgba(201,168,76,0.05);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 2px;
+    padding: 20px 16px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s;
+  }
+  .feat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    opacity: 0;
+    transition: opacity 0.4s;
+  }
+  .feat-card:active::before { opacity: 1; }
+  .feat-card:active { background: rgba(201,168,76,0.1); }
+
+  .feat-icon {
+    font-size: 28px;
+    margin-bottom: 10px;
+    display: block;
+  }
+  .feat-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--gold-light);
+    margin-bottom: 6px;
+  }
+  .feat-desc {
+    font-size: 11px;
+    line-height: 1.7;
+    color: rgba(250,246,238,0.45);
+    letter-spacing: 0.5px;
+  }
+
+  .feat-num {
+    position: absolute;
+    bottom: 12px;
+    right: 14px;
+    font-size: 32px;
+    font-weight: 900;
+    color: rgba(201,168,76,0.07);
+    font-family: Georgia, serif;
+    line-height: 1;
+  }
+
+  /* ── PAGE 3: STATS ── */
+  #p3 {
+    background: linear-gradient(180deg, #100d08 0%, #1a1008 100%);
+  }
+
+  .stats-wrap {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    width: 100%;
+    max-width: 380px;
+    margin-bottom: 40px;
+  }
+
+  .stat-item {
+    text-align: center;
+    padding: 24px 12px;
+    background: rgba(201,168,76,0.04);
+    border: 1px solid rgba(201,168,76,0.15);
+  }
+  .stat-num {
+    font-family: Georgia, 'Noto Serif SC', serif;
+    font-size: 40px;
+    font-weight: 900;
+    background: linear-gradient(160deg, var(--gold-light), var(--gold));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+  }
+  .stat-unit {
+    font-size: 14px;
+    color: var(--gold);
+  }
+  .stat-label {
+    font-size: 11px;
+    color: rgba(250,246,238,0.4);
+    letter-spacing: 2px;
+    margin-top: 6px;
+  }
+
+  .quote-block {
+    max-width: 340px;
+    text-align: center;
+    padding: 24px;
+    border-left: 2px solid var(--gold);
+    border-right: 2px solid var(--gold);
+    background: rgba(201,168,76,0.03);
+  }
+  .quote-text {
+    font-size: 14px;
+    line-height: 2.2;
+    letter-spacing: 1px;
+    color: rgba(250,246,238,0.65);
+    font-style: italic;
+  }
+  .quote-author {
+    font-size: 11px;
+    color: var(--gold);
+    letter-spacing: 3px;
+    margin-top: 12px;
+  }
+
+  /* ── PAGE 4: PLANS ── */
+  #p4 {
+    background: linear-gradient(160deg, #0f0c08 0%, #1a1208 100%);
+  }
+
+  .plans-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    width: 100%;
+    max-width: 360px;
+    margin-top: 8px;
+  }
+
+  .plan-card {
+    padding: 20px;
+    border: 1px solid rgba(201,168,76,0.2);
+    background: rgba(201,168,76,0.03);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    position: relative;
+    transition: all 0.3s;
+  }
+  .plan-card.highlight {
+    border-color: var(--gold);
+    background: rgba(201,168,76,0.08);
+  }
+  .plan-card.highlight::after {
+    content: '推荐';
+    position: absolute;
+    top: -1px; right: 16px;
+    background: var(--gold);
+    color: var(--ink);
+    font-size: 10px;
+    letter-spacing: 1px;
+    padding: 3px 10px;
+    font-weight: 700;
+  }
+
+  .plan-icon { font-size: 32px; flex-shrink: 0; }
+  .plan-info { flex: 1; }
+  .plan-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--gold-light);
+    margin-bottom: 4px;
+  }
+  .plan-detail {
+    font-size: 11px;
+    color: rgba(250,246,238,0.4);
+    letter-spacing: 0.5px;
+  }
+  .plan-price {
+    text-align: right;
+    flex-shrink: 0;
+  }
+  .plan-amount {
+    font-family: Georgia, serif;
+    font-size: 24px;
+    font-weight: 900;
+    color: var(--gold);
+    line-height: 1;
+  }
+  .plan-period {
+    font-size: 10px;
+    color: rgba(250,246,238,0.3);
+    letter-spacing: 1px;
+  }
+
+  /* ── PAGE 5: CTA ── */
+  #p5 {
+    background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(201,168,76,0.1) 0%, var(--ink) 70%);
+  }
+
+  .cta-title {
+    font-family: 'ZCOOL XiaoWei', serif;
+    font-size: clamp(36px, 10vw, 60px);
+    text-align: center;
+    line-height: 1.3;
+    background: linear-gradient(160deg, var(--gold-light) 0%, var(--gold) 60%, var(--gold-dark) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 16px;
+  }
+
+  .cta-sub {
+    font-size: 13px;
+    letter-spacing: 2px;
+    color: rgba(250,246,238,0.4);
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+  .cta-btn {
+    display: block;
+    width: 100%;
+    max-width: 280px;
+    padding: 18px 0;
+    text-align: center;
+    background: linear-gradient(135deg, var(--gold-dark) 0%, var(--gold) 50%, var(--gold-light) 100%);
+    color: var(--ink);
+    font-size: 16px;
+    font-weight: 900;
+    letter-spacing: 4px;
+    border: none;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    margin: 0 auto 16px;
+    transition: all 0.3s;
+    font-family: 'Noto Serif SC', serif;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .cta-btn::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    animation: shine 2.5s infinite;
+  }
+  .cta-btn:active { transform: scale(0.97); }
+
+  .cta-note {
+    font-size: 11px;
+    color: rgba(250,246,238,0.25);
+    text-align: center;
+    letter-spacing: 1.5px;
+  }
+
+  .seal {
+    width: 80px; height: 80px;
+    border: 3px solid rgba(192,57,43,0.6);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'ZCOOL XiaoWei', serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: rgba(192,57,43,0.7);
+    position: absolute;
+    top: 36px; right: 24px;
+    transform: rotate(-15deg);
+    text-align: center;
+    line-height: 1.5;
+    pointer-events: none;
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes arrowPulse {
+    0%,100% { opacity: 0.5; transform: scaleY(1); }
+    50%     { opacity: 1;   transform: scaleY(1.2); }
+  }
+  @keyframes shine {
+    0%  { left: -100%; }
+    30%,100% { left: 150%; }
+  }
+
+  /* ── REVEAL (triggered by JS) ── */
+  .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.7s, transform 0.7s; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.3s; }
+  .reveal-delay-4 { transition-delay: 0.4s; }
+</style>
+</head>
+<body>
+
+<!-- DOTS -->
+<nav id="dots">
+  <div class="dot active" onclick="goTo(0)"></div>
+  <div class="dot" onclick="goTo(1)"></div>
+  <div class="dot" onclick="goTo(2)"></div>
+  <div class="dot" onclick="goTo(3)"></div>
+  <div class="dot" onclick="goTo(4)"></div>
+</nav>
+
+<div id="slider">
+
+  <!-- PAGE 1: HERO -->
+  <section id="p1">
+    <div class="hero-bg"></div>
+    <div class="hero-lines"></div>
+    <div class="hero-border"></div>
+    <div class="corner tl"></div>
+    <div class="corner tr"></div>
+    <div class="corner bl"></div>
+    <div class="corner br"></div>
+
+    <div class="badge">MARKETING PRO · 2025</div>
+    <h1 class="hero-title">万能<br>营销</h1>
+    <p class="hero-sub">全渠道增长解决方案</p>
+    <div class="hero-divider"></div>
+    <p class="hero-desc">让每一次触达<br>都成为转化的契机</p>
+
+    <div class="scroll-hint">
+      <span>向下滑动</span>
+      <div class="arrow-down"></div>
+    </div>
+  </section>
+
+  <!-- PAGE 2: FEATURES -->
+  <section id="p2">
+    <p class="section-label reveal">CORE FEATURES</p>
+    <h2 class="section-title reveal reveal-delay-1">四大核心能力</h2>
+
+    <div class="features-grid">
+      <div class="feat-card reveal reveal-delay-1">
+        <span class="feat-icon">🎯</span>
+        <div class="feat-name">精准触达</div>
+        <div class="feat-desc">AI智能分析用户行为，实现毫米级精准定向</div>
+        <div class="feat-num">01</div>
+      </div>
+      <div class="feat-card reveal reveal-delay-2">
+        <span class="feat-icon">⚡</span>
+        <div class="feat-name">极速投放</div>
+        <div class="feat-desc">一键同步全渠道，告别重复操作</div>
+        <div class="feat-num">02</div>
+      </div>
+      <div class="feat-card reveal reveal-delay-3">
+        <span class="feat-icon">📊</span>
+        <div class="feat-name">数据洞察</div>
+        <div class="feat-desc">实时看板，ROI清晰可见</div>
+        <div class="feat-num">03</div>
+      </div>
+      <div class="feat-card reveal reveal-delay-4">
+        <span class="feat-icon">🔄</span>
+        <div class="feat-name">持续优化</div>
+        <div class="feat-desc">机器学习自动调优，效果持续提升</div>
+        <div class="feat-num">04</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PAGE 3: STATS -->
+  <section id="p3">
+    <p class="section-label reveal">PROVEN RESULTS</p>
+    <h2 class="section-title reveal reveal-delay-1">实战数据说话</h2>
+
+    <div class="stats-wrap">
+      <div class="stat-item reveal reveal-delay-1">
+        <div class="stat-num">3.8<span class="stat-unit">×</span></div>
+        <div class="stat-label">平均ROI提升</div>
+      </div>
+      <div class="stat-item reveal reveal-delay-2">
+        <div class="stat-num">500<span class="stat-unit">+</span></div>
+        <div class="stat-label">服务品牌</div>
+      </div>
+      <div class="stat-item reveal reveal-delay-3">
+        <div class="stat-num">98<span class="stat-unit">%</span></div>
+        <div class="stat-label">客户续约率</div>
+      </div>
+      <div class="stat-item reveal reveal-delay-4">
+        <div class="stat-num">2.4<span class="stat-unit">亿</span></div>
+        <div class="stat-label">月触达用户</div>
+      </div>
+    </div>
+
+    <div class="quote-block reveal">
+      <p class="quote-text">「接入后首月销售额增长 240%，<br>运营成本下降了一半，<br>这是我们用过最划算的工具。」</p>
+      <p class="quote-author">— 某头部消费品牌 CMO</p>
+    </div>
+  </section>
+
+  <!-- PAGE 4: PLANS -->
+  <section id="p4">
+    <p class="section-label reveal">PRICING</p>
+    <h2 class="section-title reveal reveal-delay-1">选择你的方案</h2>
+
+    <div class="plans-list">
+      <div class="plan-card reveal reveal-delay-1">
+        <div class="plan-icon">🌱</div>
+        <div class="plan-info">
+          <div class="plan-name">入门版</div>
+          <div class="plan-detail">3个渠道 · 月均10万触达</div>
+        </div>
+        <div class="plan-price">
+          <div class="plan-amount">999</div>
+          <div class="plan-period">元 / 月</div>
+        </div>
+      </div>
+
+      <div class="plan-card highlight reveal reveal-delay-2">
+        <div class="plan-icon">🚀</div>
+        <div class="plan-info">
+          <div class="plan-name">专业版</div>
+          <div class="plan-detail">全渠道 · 月均100万触达</div>
+        </div>
+        <div class="plan-price">
+          <div class="plan-amount">4999</div>
+          <div class="plan-period">元 / 月</div>
+        </div>
+      </div>
+
+      <div class="plan-card reveal reveal-delay-3">
+        <div class="plan-icon">👑</div>
+        <div class="plan-info">
+          <div class="plan-name">旗舰版</div>
+          <div class="plan-detail">私有化部署 · 无限触达</div>
+        </div>
+        <div class="plan-price">
+          <div class="plan-amount">面议</div>
+          <div class="plan-period"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PAGE 5: CTA -->
+  <section id="p5">
+    <div class="seal">限时<br>优惠<br>活动</div>
+
+    <p class="section-label reveal">GET STARTED</p>
+    <h2 class="cta-title reveal reveal-delay-1">立即开启<br>增长之旅</h2>
+    <p class="cta-sub reveal reveal-delay-2">前100名注册享6折优惠</p>
+
+    <button class="cta-btn reveal reveal-delay-3" onclick="handleCTA()">
+      免费试用 14 天
+    </button>
+    <p class="cta-note reveal reveal-delay-4">无需绑定信用卡 · 随时可取消</p>
+  </section>
+
+</div>
+
+<script>
+  const TOTAL = 5;
+  let current = 0;
+  let isAnimating = false;
+  let startY = 0;
+
+  const slider = document.getElementById('slider');
+  const dots = document.querySelectorAll('.dot');
+
+  function goTo(idx) {
+    if (isAnimating || idx === current) return;
+    isAnimating = true;
+    current = Math.max(0, Math.min(TOTAL - 1, idx));
+    slider.style.transform = `translateY(-${current * 100}dvh)`;
+    dots.forEach((d, i) => d.classList.toggle('active', i === current));
+    revealCurrent();
+    setTimeout(() => isAnimating = false, 900);
+  }
+
+  function revealCurrent() {
+    const sections = document.querySelectorAll('section');
+    const sec = sections[current];
+    sec.querySelectorAll('.reveal').forEach(el => el.classList.add('visible'));
+  }
+
+  // Touch
+  document.addEventListener('touchstart', e => { startY = e.touches[0].clientY; }, { passive: true });
+  document.addEventListener('touchend', e => {
+    const dy = startY - e.changedTouches[0].clientY;
+    if (Math.abs(dy) > 40) goTo(current + (dy > 0 ? 1 : -1));
+  });
+
+  // Wheel (desktop)
+  let lastWheel = 0;
+  document.addEventListener('wheel', e => {
+    const now = Date.now();
+    if (now - lastWheel < 600) return;
+    lastWheel = now;
+    goTo(current + (e.deltaY > 0 ? 1 : -1));
+  }, { passive: true });
+
+  // Keyboard
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowDown' || e.key === 'ArrowRight') goTo(current + 1);
+    if (e.key === 'ArrowUp'   || e.key === 'ArrowLeft')  goTo(current - 1);
+  });
+
+  // CTA
+  function handleCTA() {
+    const btn = document.querySelector('.cta-btn');
+    btn.textContent = '✓ 已提交，稍后联系您';
+    btn.style.background = 'linear-gradient(135deg, #2d6a4f, #40916c)';
+    btn.style.color = '#fff';
+  }
+
+  // Init first page
+  revealCurrent();
+</script>
+</body>
+</html>
